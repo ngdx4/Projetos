@@ -19,12 +19,12 @@ void trocador(char string[],char vogais[], char caracter, int tamanho, int* cont
 	*contador = cont;
 }
 void codigo (){
-	char string[30];
+	char string[100];
 	char caracter;
 	char vogais[5] = {'a','e','i','o','u'};
 	int contador;
 	printf("Insira uma palavra: \n");
-	fgets(string, 30, stdin);
+	fgets(string, 100, stdin);
 	printf("Insira uma caractere: \n");
 	scanf(" %c", &caracter);
 	int tamanho = strlen(string);
