@@ -10,7 +10,6 @@ void clearbuffer (){
 	int c;
 	while((c = getchar()) != '\n'){}
 }
-
 int menu (){
 	char saida[10];
 	while(!strstr(saida, "sair")){
@@ -23,9 +22,7 @@ int menu (){
 			clearbuffer();
 			continue;
 		}
-		for(int i=0; i<strlen(saida); i++){
-			saida[i] = tolower(saida[i]);
-		}
+		for(int i = 0; i<strlen(saida);i++) saida[i] = tolower(saida[i]);
 		if(strstr(saida, "jogar")){
 			return 1;
 		}else if(strstr(saida, "sair")){
@@ -79,17 +76,14 @@ void organizar_tabuleiro(criar tabuleiro){
 }
 
 int coordenadas(char coordenada[2], int *cont){
-	char num[9] = {' ','1','2','3','4','5','6','7','8'};
-	char letras[9] = {' ','a','b','c','d','e','f','g','h'};
+	char letras[8] = {'a','b','c','d','e','f','g','h'};
 	int x, y;
-	for(int i = 0;i<9;i++){
+	for(int i = 0;i<8;i++){
 		if(coordenada[0] == letras[i]){
-			x = i;
-		}
-		if(coordenada[1] == num[i]){
-			y = i;
+			x = i+1;
 		}
 	}
+	y = atoi(&coordenada[1]);
 	*cont += 1;
 	if( *cont  % 2 == 0){
 		return x;
@@ -211,11 +205,11 @@ void upgrade_peao(criar tabuleiro){
 		clearbuffer();
 	}
 }
-void salvar_jogada(int contador, char **historico, char inicio[3], char destino[3]){
-	contador /= 2;
-	strcpy(historico[contador - 1], inicio);
-	strcpy(historico[contador], destino);
-	
+void salvar_jogada(int cont, char *historico[1000], char inicio[3], char destino[3]){
+	cont = cont/2;
+	strcpy(historico[cont], destino);
+	cont -= 1;
+	strcpy(historico[cont], inicio);
 }
 void imprimir_tabuleiro(criar tabuleiro){
 	for(int i=0; i<9;i++){
@@ -234,11 +228,10 @@ void imprimir_tabuleiro(criar tabuleiro){
 	}
 	printf("\n");
 }
-int partida(criar tabuleiro, char **historico){
+int partida(criar tabuleiro, char *historico[3]){
 	char c;
-	char saida[4];
-	char inicio[3];
-	char destino[3];
+	char inicio[10];
+	char destino[10];
 	int ix,iy,dx,dy;
 	int contador, vencedor = 0;
 	do{
@@ -246,20 +239,18 @@ int partida(criar tabuleiro, char **historico){
 		system("clear");
 		imprimir_tabuleiro(tabuleiro);
 		do{
-			if(c == '\n'){
-			clearbuffer();
-			}
 			printf("Insira a coordenada da peça para mover:\n");
 			fgets(inicio, sizeof(inicio), stdin);
 			clearbuffer();
 			printf("Insira a coordenada destino:\n");
 			fgets(destino, sizeof(destino), stdin);
 			clearbuffer();
+			
 			ix = coordenadas(inicio, &contador);
 			iy = coordenadas(inicio, &contador);
 			dx = coordenadas(destino, &contador);
 			dy = coordenadas(destino, &contador);
-//			salvar_jogada(contador ,historico, inicio, destino);
+			salvar_jogada(contador ,historico, inicio, destino);
 			if(ix == dx && iy == dy){
 				printf("A peça não foi movida.\n");
 			}else{
@@ -291,7 +282,7 @@ int partida(criar tabuleiro, char **historico){
 }
 
 void jogo_xadrez (){
-	char **historico;
+	char *historico[3];
 	system("clear");
 	printf("\nBEM VINDO AO JOGO DE XADREZ\n\n");
 	int saida = menu();
