@@ -5,35 +5,7 @@
 #include<unistd.h>
 
 int main(){
-	char matrix[5][30];
-	char string[] = "arroooouuu fufado";
-	printf("%ld\n", strlen(string));
-	for(int j, i= 0;i<5;i++){
-		for(j=0;j<30;j++) matrix[i][j] = '0';
-	}
-	
-	strcpy(matrix[1], string);
-//	matrix[1][strlen(string)] = '\0';
-
-	for(int j, i= 0;i<5;i++){
-		for(j=0;j<30;j++){
-			if(i == 1){
-				printf("%c",matrix[i][j]);
-			}else{
-					printf("[%c]",matrix[i][j]);
-			}
-		}
-		printf("\n");
-	}
-
-	printf("%s", string);
-
-	if(matrix[1][sizeof(string)] == '\0'){
-		printf("ta zerado");
-	}else{
-		printf("nao ta zerado");
-	}
-
-
+	int a, b,c;
+	printf("&a: %p\n&b: %p\n&c: %p\n",&a,&b,&c);
 	return 0;
 }

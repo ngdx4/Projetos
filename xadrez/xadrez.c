@@ -229,20 +229,6 @@ void upgrade_peao(criar tabuleiro){
 		clearbuffer();
 	}
 }
-/*void saveorundo_jogada(int contagem, char inicio[3], char destino[3],criar tabuleiro, int desfazer_jogada){
-	criar copia_tabuleiro;
-	if(!desfazer_jogada){
-		for(int i = 0; i<9; i++){
-			for(int j = 0; j<9; j++){
-				copia_tabuleiro[i][j] = tabuleiro[i][j];
-			}
-		}
-	}else{
-		for(int i = 0; i<9; i++){
-				tabuleiro[i][j] = copia_tabuleiro[i][j]
-		}
-	}
-}*/
 void imprimir_tabuleiro(criar tabuleiro){
 	for(int i=0; i<9;i++){
 		for(int j=0; j<9;j++){
@@ -262,15 +248,32 @@ void imprimir_tabuleiro(criar tabuleiro){
 	}
 	printf("\n");
 }
+void undo_jogada(criar tabuleiro, int desfazer_jogada, char*ptr2, int tamanho){
+	char *ptr1 = &tabuleiro[0][0];
+	int i = 0;
+	if(!desfazer_jogada){
+		while(i<tamanho){
+			*(ptr2-i) = *(ptr1-i);
+			i++;
+		}
+	}else{
+		for(int i = 0; i<tamanho; i++){
+				*(ptr1-i) = *(ptr2-i);
+		}
+	}
+}
 int partida(criar tabuleiro){
+	criar copia_tabuleiro;
+	organizar_tabuleiro(copia_tabuleiro);
 	char c;
 	char inicio[10], destino[10];
 	int ix,iy,dx,dy;
-	int contador = 0, vencedor = 0;
+	int contador = 0, vencedor = 0, tamanho = sizeof(*tabuleiro);
 	do{
 		int jogou = 0, desfazer_jogada = 0;
 		system("clear");
 		imprimir_tabuleiro(tabuleiro);
+		imprimir_tabuleiro(copia_tabuleiro);
 		do{
 			printf("Insira a coordenada da peça para mover:\n");
 			fgets(inicio, sizeof(inicio), stdin);
@@ -283,12 +286,12 @@ int partida(criar tabuleiro){
 				iy = coordenadas(inicio, &contador);
 				dx = coordenadas(destino, &contador);
 				dy = coordenadas(destino, &contador);
-//				saveorundo_jogada(contador, inicio, destino, tabuleiro,desfazer_jogada);
-				pausar();
+				undo_jogada(tabuleiro,desfazer_jogada,&copia_tabuleiro[0][0], tamanho);
+//				pausar();
 			}
 			if(strstr(inicio, "desfazer") || strstr(destino, "desfazer")){
-				//desfazer_jogada++;
-//				saveorundo_jogada(contador,inicio,destino,tabuleiro,desfazer_jogada);
+				desfazer_jogada++;
+				undo_jogada(tabuleiro,desfazer_jogada,&copia_tabuleiro[0][0], tamanho);
 				pausar();
 				continue;
 			}else if(ix == dx && iy == dy){
