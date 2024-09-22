@@ -3,11 +3,8 @@
 #include<string.h>
 #include<ctype.h>
 #include<unistd.h>
-#include<locale.h>
-#include<wchar.h>
 
-
-typedef wchar_t criar[9][9];
+typedef char criar[9][9];
 
 void pausar(){//não existe o comando "system("pause");" no termux.
 	printf("Pressione qualquer tecla para continuar...\n");
@@ -48,11 +45,10 @@ int menu (){
 		for(int i = 0; i<strlen(saida);i++) saida[i] = tolower(saida[i]);
 		if(strstr(saida, "jogar")|| strchr(&saida[0], '1')){
 			return 1;
-	}else if(strstr(saida,"historico")||strchr(&saida[0],'2')){
-//			imprimir_historico(historico);
-			printf("Em manutenção\n");
-			pausar();
-			continue;
+/*	}else if(strstr(saida,"historico")||strchr(&saida[0],'2')){
+			imprimir_historico(historico);
+			system("pause");
+			continue;*/
 		}else if(strstr(saida, "sair")||strchr(&saida[0], '3')){
 			break;
 		}else{
@@ -62,9 +58,10 @@ int menu (){
 	return 0;
 }
 
-/*void organizar_tabuleiro(criar tabuleiro){
+void organizar_tabuleiro(char *original){
+	criar tabuleiro;
 	char pecas_tab[] = {'P','T','H','B','R','Q'};
-	char num[9] = {' ','8','7','6','5','4','3','2','1'};
+	char num[9] = {' ','1','2','3','4','5','6','7','8'};
 	char letras[8] = {'a','b','c','d','e','f','g','h'};
 	for(int i=0; i<9;i++){
 		for(int j=0; j<9;j++){
@@ -101,91 +98,35 @@ int menu (){
 			}
 		}
 	}
-}*/
-void organizar_tabuleiro(criar tabuleiro){
-
-	wchar_t pecas_tab[12];
-	wchar_t c = 0x2654;
-	for(int i=0;i<12;i++){
-		pecas_tab[i] = c+i;
-	}
-	char num[9] = {' ','8','7','6','5','4','3','2','1'};
-	char letras[8] = {'a','b','c','d','e','f','g','h'};
-	for(int i=0; i<9;i++){
-		for(int j=0; j<9;j++){
-			if(i == 0){
-				tabuleiro[i][j] = letras[j];
-			}else if(j == 0){
-				tabuleiro[i][j] = num[i];
-			}else if(i == 0 && j == 8){
-				tabuleiro[i][j]	= '\n';
-			}else if(i == 1){
-				tabuleiro[i][1] = pecas_tab[2];
-				tabuleiro[i][8] = pecas_tab[2];
-				tabuleiro[i][2] = pecas_tab[4];
-				tabuleiro[i][7] = pecas_tab[4];
-				tabuleiro[i][3] = pecas_tab[3];
-				tabuleiro[i][6] = pecas_tab[3];
-				tabuleiro[i][5] = pecas_tab[1];
-				tabuleiro[i][4] = pecas_tab[0];
-			}else if(i == 2){
-				tabuleiro[i][j] = pecas_tab[5];
-			}else if(i == 7){
-				tabuleiro[i][j] = pecas_tab[11];
-			}else if(i == 8){
-				tabuleiro[i][1] = pecas_tab[8];
-				tabuleiro[i][8] = pecas_tab[8];
-				tabuleiro[i][2] = pecas_tab[10];
-				tabuleiro[i][7] = pecas_tab[10];
-				tabuleiro[i][3] = pecas_tab[9];
-				tabuleiro[i][6] = pecas_tab[9];
-				tabuleiro[i][5] = pecas_tab[7];
-				tabuleiro[i][4] = pecas_tab[6];
-			}else{
-				tabuleiro[i][j] = ' ';
-			}
-		}
-	}
-	
+	for(int i=0;i<sizeof(tabuleiro);i++) *(
 }
 
-int coordenadas(char coordenada[10], int *cont){
+int coordenadas(char coordenada[2], int *cont){
 	char letras[8] = {'a','b','c','d','e','f','g','h'};
-	char num[8] = {'8','7','6','5','4','3','2','1'};
-	int x, y,erro=1, i = 0;
-	for( i=0;i<8;i++){
-		if(coordenada[0] != letras[i] || coordenada[1] != num[i]){
-			erro = 0;
-		}
-		if(coordenada[0] == letras[i] || coordenada[1] == num[i]){
-			erro = 1;
-			break;
+	int x, y;
+	for(int i = 0;i<8;i++){
+		if(coordenada[0] == letras[i]){
+			x = i+1;
 		}
 	}
-		if(erro == 0) return erro;
-	for(i = 0;i<8;i++){
-		if(coordenada[0] == letras[i]) y = i+1;
-	}
-	for( i=0 ;i<8;i++){
-		if(coordenada[1] == num[i]) x = i+1;
-	}
-
+	y = atoi(&coordenada[1]);
 	*cont += 1;
-	if( *cont  % 2 == 1){
+	if( *cont  % 2 == 0){
 		return x;
 	}else{
 		return y;
 	}
+	
 }
 int verificador_ganhador(criar tabuleiro){
 	int verificadorb = 0;
 	int verificadorp = 0;
 	for(int i = 0; i<9;i++){
 		for(int j = 0; j<9; j++){
-			if(tabuleiro[i][j] == 0x265A){
+			if(tabuleiro[i][j] == 'R'){
 				verificadorb = 1;
 			}
-			if(tabuleiro[i][j] == 0x2654){
+			if(tabuleiro[i][j] == 'r'){
 				verificadorp = 1;
 			}
 		}
@@ -199,6 +140,7 @@ int verificador_ganhador(criar tabuleiro){
 		return 0;
 	}
 }
+
 void upgrade_peao(criar tabuleiro){
 	int erro = 0;
 	int peao;
@@ -213,7 +155,7 @@ void upgrade_peao(criar tabuleiro){
 	while(!erro){
 		erro = 1;
 		for(int i=0; i<9;i++){
-			if(tabuleiro[1][i] == 0x265F){
+			if(tabuleiro[1][i] == 'P'){
 				printf("Escreva qual peça ira trocar pelo peao:\n");
 				printf("Torre - Cavalo - Bispo - Rainha\n");
 				fgets(escolha, sizeof(escolha),stdin);
@@ -231,16 +173,16 @@ void upgrade_peao(criar tabuleiro){
 				}
 				switch(peao){
 					case torre:
-						tabuleiro[1][i] = 0x265C;
+						tabuleiro[1][i] = 'T';
 						break;
 					case cavalo:
-						tabuleiro[1][i] = 0x265E;
+						tabuleiro[1][i] = 'H';
 						break;
 					case bispo:
-						tabuleiro[1][i] = 0x265D;
+						tabuleiro[1][i] = 'B';
 						break;
 					case rainha:
-						tabuleiro[1][i] = 0x265B;
+						tabuleiro[1][i] = 'Q';
 						break;
 					default:
 						printf("Escolha não reconhecida, Escreva novamente\n");
@@ -248,7 +190,7 @@ void upgrade_peao(criar tabuleiro){
 						break;
 				}
 			}
-			if(tabuleiro[8][i] == 0x2659){
+			if(tabuleiro[8][i] == 'p'){
 				printf("Escreva qual peça ira trocar pelo peao\n");
 				printf("Torre - Cavalo - Bispo - Rainha\n");
 				fgets(escolha, sizeof(escolha),stdin);
@@ -266,16 +208,16 @@ void upgrade_peao(criar tabuleiro){
 				}
 				switch(peao){
 					case torre:
-						tabuleiro[8][i] = 0x2656;
+						tabuleiro[8][i] = 't';
 						break;
 					case cavalo:
-						tabuleiro[8][i] = 0x2658;
+						tabuleiro[8][i] = 'h';
 						break;
 					case bispo:
-						tabuleiro[8][i] = 0x2657;
+						tabuleiro[8][i] = 'b';
 						break;
 					case rainha:
-						tabuleiro[8][i] = 0x2655;
+						tabuleiro[8][i] = 'q';
 						break;
 					default:
 						printf("Escolha não reconhecida, Escreva novamente\n");
@@ -293,82 +235,35 @@ void imprimir_tabuleiro(criar tabuleiro){
 	for(int i=0; i<9;i++){
 		for(int j=0; j<9;j++){
 			if(i == 0 && j == 0){
-				wprintf(L"\t %lc  ", tabuleiro[i][j]);
+				printf("\t %c  ", tabuleiro[i][j]);
 			}else if( i == 0){
-				wprintf(L" %lc  ", tabuleiro[i][j]);
+				printf(" %c  ", tabuleiro[i][j]);
 			}else if(j == 0){
-				wprintf(L" %lc \t", tabuleiro[i][j]);
+				printf(" %c \t", tabuleiro[i][j]);
 			}else if((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1)){
-				wprintf(L"{%lc} ", tabuleiro[i][j]);
+				printf("{%c} ", tabuleiro[i][j]);
 			}else{
-				wprintf(L"[%lc] ", tabuleiro[i][j]);
+				printf("[%c] ", tabuleiro[i][j]);
 			}
 		}
 		printf("\n");
 	}
 	printf("\n");
 }
-void undo_jogada(wchar_t *original, wchar_t* copia, int desfazer_jogada, int tamanho){
+void undo_jogada(char *raiz, char* nutella, int desfazer_jogada, int tamanho){
 	int i = 0;
 	if(!desfazer_jogada){
 		while(i<tamanho){
-			*(copia+i) = *(original+i);
+			*(nutella+i) = *(raiz+i);
 			i++;
 		}
 	}else{
 		while(i<tamanho){
-				*(original+i) = *(copia+i);
+				*(raiz+i) = *(nutella+i);
 				i++;
 		}
 	}
-}
-int verificador_de_movimento(criar tabuleiro,int ix, int iy, int dx, int dy){
-	wchar_t peca = tabuleiro[iy][ix];
-	int result = 1;
-//	printf("peca: %c, iy:%d,dy:%d , iy-1:%d\n",peca, iy, dy, iy+1);
-
-	if(peca == 0x265F){
-		if(iy == 7){
-			if(tabuleiro[dy][dx] != ' '){
-				if(dy == iy-1 || dy == iy-2){
-					if(dx == ix){
-						result = 1;
-					}
-				}
-			}
-		}else if(dy == iy-1){
-			if(dx == ix){ 
-				result = 1;
-			}else{ result = 0;}
-			if(tabuleiro[dy][dx] != ' '){
-				if(dx == ix-1 || dx == ix + 1){
-					result = 1;
-				}else{ result = 0;}
-			}
-		}else{ result = 0;}
-	}
-	if(peca == 0x2659){
-		if(iy == 2){
-			if(tabuleiro[dy][dx] != ' '){
-				if(dy == iy+1 || dy == iy+2){
-					if(dx == ix){
-						result = 1;
-					}
-				}
-			}
-		}else if(dy == iy+1){
-			if(dx == ix){ 
-				result = 1;
-			}else{ result = 0;}
-			if(tabuleiro[dy][dx] != ' '){
-				if(dx == ix-1 || dx == ix + 1){
-					result = 1;
-				}else{ result = 0;}
-			}
-		}else{ result = 0;}
-	}
-
-	return result;
+	printf("%d   %d\n",desfazer_jogada, i);
 }
 int partida(criar tabuleiro){
 	criar copia_tabuleiro;
@@ -376,26 +271,24 @@ int partida(criar tabuleiro){
 	char c;
 	char inicio[10], destino[10];
 	int ix,iy,dx,dy;
-	int  contador = 0, vencedor = 0, tamanho = 81;
+	int contador = 0, vencedor = 0, tamanho = sizeof(tabuleiro);
 	do{
-		int jogou = 0, desfazer_jogada = 0, valido = 1;
+		int jogou = 0, desfazer_jogada = 0;
 		system("clear");
 		imprimir_tabuleiro(tabuleiro);
-//		imprimir_tabuleiro(copia_tabuleiro);
+		imprimir_tabuleiro(copia_tabuleiro);
 		do{
-			if(c == '\n') clearbuffer();
 			printf("Insira a coordenada da peça para mover:\n");
-			scanf("%s",inicio);
-			if(c != '\n') clearbuffer();
+			fgets(inicio, sizeof(inicio), stdin);
+			if(c == '\n') clearbuffer();
 			if(!strstr(inicio, "desfazer")){
 				printf("Insira a coordenada destino:\n");
-				scanf("%s",destino);
-				if(c != '\n') clearbuffer();
-				iy = coordenadas(inicio, &contador);
+				fgets(destino, sizeof(destino), stdin);
+				if(c == '\n') clearbuffer();
 				ix = coordenadas(inicio, &contador);
-				dy = coordenadas(destino, &contador);
+				iy = coordenadas(inicio, &contador);
 				dx = coordenadas(destino, &contador);
-				valido = verificador_de_movimento(tabuleiro,ix,iy,dx,dy);
+				dy = coordenadas(destino, &contador);
 				undo_jogada(&tabuleiro[0][0],&copia_tabuleiro[0][0],desfazer_jogada, tamanho);
 //				pausar();
 			}
@@ -403,20 +296,13 @@ int partida(criar tabuleiro){
 				desfazer_jogada = 1;
 				undo_jogada(&tabuleiro[0][0],&copia_tabuleiro[0][0],desfazer_jogada, tamanho);
 				pausar();
-				break;
-			}else if(ix == 0 || iy == 0 || dx == 0 || dy == 0){
-				printf("Insira as coordenadas corretamente, coluna e linha e sem espaços.\n");
+				continue;
 			}else if(ix == dx && iy == dy){
 				printf("A peça não foi movida.\n");
-//				printf("ix:%d\tdx:%d\tiy:%d\tdy:%d\n",ix,dx,iy,dy);
-				break;
-			}else if(!valido){
-				printf("movimento invalido, pressione qualquer tecla para continuar...\n");
-				getchar();
-				break;
+				continue;
 			}else{
-				tabuleiro[dy][dx] = tabuleiro[iy][ix];
-				tabuleiro[iy][ix] = ' ';
+				tabuleiro[dx][dy] = tabuleiro[ix][iy];
+				tabuleiro[ix][iy] = ' ';
 				break;
 			}
 		}while(!jogou);
@@ -449,11 +335,11 @@ void jogo_xadrez (){
 	int saida = menu();
 	if(saida){
 		criar tabuleiro;
-		organizar_tabuleiro(tabuleiro);
+		organizar_tabuleiro(&tabuleiro[0][0]);
 		do{
 			system("clear");
 			saida = partida(tabuleiro);
-			organizar_tabuleiro(tabuleiro);
+			organizar_tabuleiro(&tabuleiro[0][0]);
 		}while(saida);
 	printf("Obrigado por jogar!!!\n");
 	}else{
@@ -461,7 +347,6 @@ void jogo_xadrez (){
 	}
 }
 int main(){
-	setlocale(LC_CTYPE,"");
 	jogo_xadrez();
 	return 0;
 }

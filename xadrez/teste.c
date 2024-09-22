@@ -3,9 +3,11 @@
 #include<string.h>
 #include<ctype.h>
 #include<unistd.h>
+typedef char criar[9][9];
 
 int main(){
-	int a, b,c;
-	printf("&a: %p\n&b: %p\n&c: %p\n",&a,&b,&c);
+	criar matriz;
+	int tamanho = sizeof(matriz);
+	printf("%d\n",tamanho);
 	return 0;
 }
